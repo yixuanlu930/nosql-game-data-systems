@@ -1,0 +1,7 @@
+El docker-compose levanta un clúster local de Cassandra de 3 nodos (n1, n2, n3) en la misma red Docker, configurados como mismo clúster (jotuns-lair), mismo datacenter (dc1) y mismo rack (rack1), usando n1 como seed para que los otros se unan.
+
+Aquí está el comando para arrancar los 3 contenedores en background:
+docker compose up -d
+
+Aquí está el comando que comprueba que el clúster está formado (3 nodos “UN”) y que están en dc1/rack1:
+docker exec -it cassandra_n1 nodetool status

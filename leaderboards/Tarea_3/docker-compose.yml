@@ -1,0 +1,38 @@
+services:
+  cassandra_n1:
+    image: cassandra:latest
+    container_name: cassandra_n1
+    environment:
+      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
+      CASSANDRA_DC: "dc1"
+      CASSANDRA_RACK: "rack1"
+      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
+    networks: [cassandra-net]
+
+  cassandra_n2:
+    image: cassandra:latest
+    container_name: cassandra_n2
+    depends_on: [cassandra_n1]
+    environment:
+      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
+      CASSANDRA_SEEDS: "cassandra_n1"
+      CASSANDRA_DC: "dc1"
+      CASSANDRA_RACK: "rack1"
+      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
+    networks: [cassandra-net]
+
+  cassandra_n3:
+    image: cassandra:latest
+    container_name: cassandra_n3
+    depends_on: [cassandra_n1]
+    environment:
+      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
+      CASSANDRA_SEEDS: "cassandra_n1"
+      CASSANDRA_DC: "dc1"
+      CASSANDRA_RACK: "rack1"
+      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
+    networks: [cassandra-net]
+
+networks:
+  cassandra-net:
+    name: cassandra-net
