@@ -1,37 +1,98 @@
+version: '3.8'
+
 services:
-  cassandra_n1:
+  cassandra-n1:
     image: cassandra:latest
-    container_name: cassandra_n1
+    container_name: cassandra-n1
     environment:
-      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
-      CASSANDRA_DC: "dc1"
-      CASSANDRA_RACK: "rack1"
-      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
-    networks: [cassandra-net]
+      - CASSANDRA_CLUSTER_NAME=cassandra-lab
+      - CASSANDRA_SEEDS=cassandra-n1
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+    networks:
+      - cassandra-net
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
-  cassandra_n2:
+  cassandra-n2:
     image: cassandra:latest
-    container_name: cassandra_n2
-    depends_on: [cassandra_n1]
+    container_name: cassandra-n2
+    depends_on:
+      cassandra-n1:
+        condition: service_healthy
+    restart: on-failure
     environment:
-      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
-      CASSANDRA_SEEDS: "cassandra_n1"
-      CASSANDRA_DC: "dc1"
-      CASSANDRA_RACK: "rack1"
-      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
-    networks: [cassandra-net]
+      - CASSANDRA_CLUSTER_NAME=cassandra-lab
+      - CASSANDRA_SEEDS=cassandra-n1
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+    networks:
+      - cassandra-net
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
-  cassandra_n3:
+  cassandra-n3:
     image: cassandra:latest
-    container_name: cassandra_n3
-    depends_on: [cassandra_n1]
+    container_name: cassandra-n3
+    depends_on:
+      cassandra-n2:
+        condition: service_healthy
+    restart: on-failure
     environment:
-      CASSANDRA_CLUSTER_NAME: "cassandra-lab"
-      CASSANDRA_SEEDS: "cassandra_n1"
-      CASSANDRA_DC: "dc1"
-      CASSANDRA_RACK: "rack1"
-      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
-    networks: [cassandra-net]
+      - CASSANDRA_CLUSTER_NAME=cassandra-lab
+      - CASSANDRA_SEEDS=cassandra-n1
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+    networks:
+      - cassandra-net
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  cassandra-init:
+    image: cassandra:latest
+    container_name: cassandra-init
+    depends_on:
+      cassandra-n1:
+        condition: service_healthy
+      cassandra-n2:
+        condition: service_healthy
+      cassandra-n3:
+        condition: service_healthy
+    networks:
+      - cassandra-net
+    volumes:
+      - ../leaderboards.cql:/workspace/leaderboards.cql
+      - ../csv_tablas:/workspace/csv_tablas
+    working_dir: /workspace
+    command: >
+      /bin/bash -c "
+      echo 'All nodes healthy, running init script...';
+      cqlsh cassandra-n1 -f leaderboards.cql &&
+      echo 'Init completed successfully'
+      "
 
 networks:
   cassandra-net:
