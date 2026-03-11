@@ -9,10 +9,11 @@ CREATE TABLE hall_of_fame_by_country (
     email TEXT,
     user_name TEXT,
     date TIMESTAMP,
+    dungeon_name TEXT STATIC,
     PRIMARY KEY ((country, dungeon_id), time_minutes, email)
 ) WITH CLUSTERING ORDER BY (time_minutes ASC, email ASC);
 
-COPY hall_of_fame_by_country (country, dungeon_id, time_minutes, email, user_name, date) FROM 'csv_tablas/hall_of_fame_by_country.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
+COPY hall_of_fame_by_country (country, dungeon_id, time_minutes, email, user_name, date, dungeon_name) FROM 'csv_tablas/hall_of_fame_by_country.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
 
 CREATE TABLE dungeons_by_country (
     country TEXT,
