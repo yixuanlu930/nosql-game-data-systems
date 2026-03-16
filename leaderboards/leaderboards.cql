@@ -33,6 +33,7 @@ CREATE TABLE user_statistics_by_dungeon (
 
 COPY user_statistics_by_dungeon (email, dungeon_id, time_minutes, date) FROM 'csv_tablas/user_statistics_by_dungeon.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
 
+
 CREATE TABLE top_horde_by_event (
     country text,
     event_id int,
@@ -41,5 +42,8 @@ CREATE TABLE top_horde_by_event (
     email text,
     PRIMARY KEY ((country, event_id), n_killed, email)
 ) WITH CLUSTERING ORDER BY (n_killed DESC, email ASC);
+
+-- Creamos el índice sobre la columna email para poder filtrar por ella. Necesario para la escritura de la tabla top_horde_by_event, en la tarea 6.
+CREATE INDEX IF NOT EXISTS idx_email_horde ON top_horde_by_event (email);
 
 COPY top_horde_by_event (country, event_id, n_killed, user_name, email) FROM 'csv_tablas/top_horde_by_event.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
