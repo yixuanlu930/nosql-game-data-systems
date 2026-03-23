@@ -6,7 +6,6 @@ services:
     container_name: cassandra-n1
     environment:
       - CASSANDRA_CLUSTER_NAME=cassandra-lab
-      - CASSANDRA_SEEDS=cassandra-n1
       - CASSANDRA_DC=dc1
       - CASSANDRA_RACK=rack1
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
@@ -56,7 +55,7 @@ services:
     restart: on-failure
     environment:
       - CASSANDRA_CLUSTER_NAME=cassandra-lab
-      - CASSANDRA_SEEDS=cassandra-n1
+      - CASSANDRA_SEEDS=cassandra-n1, cassandra-n2
       - CASSANDRA_DC=dc1
       - CASSANDRA_RACK=rack1
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch

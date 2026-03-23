@@ -5,13 +5,13 @@ USE leaderboards;
 CREATE TABLE hall_of_fame_by_country (
     country TEXT,
     dungeon_id INT,
-    time_minutes INT,
+    time_minutes FLOAT,
     email TEXT,
     user_name TEXT,
     date TIMESTAMP,
     dungeon_name TEXT STATIC,
-    PRIMARY KEY ((country, dungeon_id), time_minutes, email)
-) WITH CLUSTERING ORDER BY (time_minutes ASC, email ASC);
+    PRIMARY KEY ((country, dungeon_id), time_minutes, date, email)
+) WITH CLUSTERING ORDER BY (time_minutes ASC, date ASC, email ASC);
 
 COPY hall_of_fame_by_country (country, dungeon_id, time_minutes, email, user_name, date, dungeon_name) FROM 'csv_tablas/hall_of_fame_by_country.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
 
@@ -26,10 +26,10 @@ COPY dungeons_by_country (country, dungeon_id) FROM 'csv_tablas/dungeons_by_coun
 CREATE TABLE user_statistics_by_dungeon (
     email TEXT,
     dungeon_id INT,
-    time_minutes INT,
+    time_minutes FLOAT,
     date TIMESTAMP,
     PRIMARY KEY ((email, dungeon_id), time_minutes, date)
-) WITH CLUSTERING ORDER BY (time_minutes ASC, date ASC);
+) WITH CLUSTERING ORDER BY (time_minutes ASC, date DESC);
 
 COPY user_statistics_by_dungeon (email, dungeon_id, time_minutes, date) FROM 'csv_tablas/user_statistics_by_dungeon.csv' WITH DELIMITER = ',' AND HEADER = TRUE;
 
@@ -45,5 +45,6 @@ CREATE TABLE top_horde_by_event (
 
 -- Creamos el índice sobre la columna email para poder filtrar por ella. Necesario para la escritura de la tabla top_horde_by_event, en la tarea 6.
 CREATE INDEX IF NOT EXISTS idx_email_horde ON top_horde_by_event (email);
+CREATE INDEX IF NOT EXISTS idx_email_hall_of_fame ON hall_of_fame_by_country (email);
 
 COPY top_horde_by_event (country, event_id, n_killed, user_name, email) FROM 'csv_tablas/top_horde_by_event.csv' WITH DELIMITER = ',' AND HEADER = TRUE;

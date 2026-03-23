@@ -1,6 +1,4 @@
--- =============================================
 -- LECTURAS
--- =============================================
 
 -- Establecemos consistencia fuerte para el Hall of Fame (un pequeño retardo no tiene impacto porque los jugadores están a salvo en 
 -- un menú)
@@ -30,9 +28,7 @@ WHERE country = 'ES' AND event_id = 500
 LIMIT 10;
 
 
--- =============================================
 -- ESCRITURAS
--- =============================================
 
 -- ESCRITURA: Cuando un usuario completa una mazmorra (User finish dungeon)
 -- Se escribe en 3 tablas: hall_of_fame_by_country, user_statistics_by_dungeon y dungeons_by_country
