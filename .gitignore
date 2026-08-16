@@ -1,1 +1,23 @@
 .gitattributes
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / credentials
+.env
+
+# IDE / editor files
+.history/
+.vscode/
+
+# R
+.Rhistory
